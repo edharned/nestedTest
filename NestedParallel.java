@@ -197,7 +197,7 @@ private void tymeacLoops () {
   String[] in = {"-threads", // use threads override (default currently 4)
                  "" + parallelism, // this many threads
                  "-no",      // no verbose - comment line for start up messages
-                 "-s"        // stand-a-lone mode (no DBMS)
+                 "-s"        // stand-a-lone mode (no DB)
                 };
   
   s = new InternalServer(); // internal, no RMI/IIOP etc      
@@ -232,18 +232,22 @@ private void tymeacLoops () {
     TP.setInput(new PassClass(i, innerLoop, latch));
     
     try {        
-      // call tymeac with a asynchronous request
-      Object[] back = ti.asyncRequest(TP); 
+      // call tymeac for an asynchronous request
+      TymeacReturn back = ti.asyncRequest(TP); 
        
       // When any invalid return, bye
-      if  (!checkBack(back)) System.exit(1);        
+      if  (back.getReturnCode() != 0) { 
+        
+          System.out.println("Return from call= " + back.getReturnCode());         
+          System.exit(1);       
+      }
     
     } catch (Exception e) {      
       System.out.println(e.toString());      
       System.exit(1);      
     } // end-catch    
   } // end-for 
-  
+    
   // wait until done
   try {
     latch.await();
@@ -251,44 +255,6 @@ private void tymeacLoops () {
   catch (InterruptedException ignore) {}
   
   end = System.nanoTime();  
-  
-} // end-method
-
-/**
- * Check the results of calling the Tymeac Server.
- * The return is an array of objects.
- * 1st and only object for async call is the result of tymeac processing:
- *   nnnn is the return code. See doc for non-zero.  
- *   
- * @param back from call
- * @return success or fail
- */
-static boolean checkBack (Object[] back) {
-  
-  // reformat the return array
-  TymeacReturn ret = TymeacReturn.formatCallReturn(back);
-  
-  // return code from tymeac
-  int rc = ret.getReturnCode();
-  
-  // When no back
-  if  (rc == 9001)  {
-        
-    // say no good  
-    System.out.println("back returned null");
-    return false;
-
-  } // endif  
-  
-  // When any error
-  if  (rc != 0) {
-    
-      System.out.println(ret.getTyMessage()); // problem
-      return false;
-      
-  } // endif
-  
-  return true;       
   
 } // end-method
 
