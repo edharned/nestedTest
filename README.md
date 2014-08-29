@@ -12,3 +12,13 @@ NextedAsyncTask.java -- Tymeac async task
 PassClass.java -- passed class to Tymeac async task
 
 TymeacDSELite.jar -- TymeacDSE classes without demos
+
+Sometimes the main thread can process the return of each asynchronous request as it completes. That is, when there is sufficient work the main thread can perform when one or more asynchrous requests complete.
+
+To demonstrate this concurrent processing are the following:
+
+WaitMParallelLoops.jave
+WaitMAsyncTask.java
+WaitMPassClass.java
+
+These classes also demonstrate how to do a multiple wait in Java. (waitm is supported in other languages.)
